@@ -62,13 +62,12 @@ export function resolveStorefrontTarget(env, { allowReservedTestHosts = false } 
       throw new Error('YOMART_NO_PRODUCTION_API must be true or false when set.');
     }
     const productionApiList = env.YOMART_PRODUCTION_API_ORIGINS;
-    const apiListExplicitlyEmpty = typeof productionApiList === 'string' && !productionApiList.trim();
     if (noProductionApi === 'true' && typeof productionApiList === 'string' && productionApiList.trim()) {
       throw new Error('YOMART_NO_PRODUCTION_API=true cannot be combined with production API origins.');
     }
     deniedApis = parseOrigins(productionApiList, 'YOMART_PRODUCTION_API_ORIGINS', {
-      allowEmpty: noProductionApi === 'true' || apiListExplicitlyEmpty,
-      allowUnset: noProductionApi === 'true',
+      allowEmpty: true,
+      allowUnset: true,
       allowReservedTestHosts,
     });
     deniedSites = parseOrigins(env.YOMART_PRODUCTION_SITE_ORIGINS, 'YOMART_PRODUCTION_SITE_ORIGINS', {

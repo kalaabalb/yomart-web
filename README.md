@@ -95,7 +95,7 @@ YOMART_PRODUCTION_API_ORIGINS=(empty or unset)
 YOMART_PRODUCTION_SITE_ORIGINS=(empty or unset until confirmed)
 ```
 
-`YOMART_NO_PRODUCTION_API=true` is an explicit owner assertion used when the production API-origin list is unset. If a production API origin is supplied, set this flag to `false` or leave it unset; a `true` flag conflicts with a non-empty list. The site-origin list may be empty/unset for staging. Any supplied denylist entries are individually validated as bare HTTPS origins: no wildcard, credentials, paths, query, or fragment. The staging API must match `YOMART_EXPECTED_API_ORIGIN`, and API and site denylist checks remain separate. A blank denylist cannot detect an origin that has not been identified; do not invent production domains.
+The production API and site denylist values may be empty or unset for staging while production origins are unconfirmed. Any supplied denylist entries are individually validated as bare HTTPS origins: no wildcard, credentials, paths, query, or fragment. The staging API must match `YOMART_EXPECTED_API_ORIGIN`, and API and site denylist checks remain separate. `YOMART_NO_PRODUCTION_API=true` may remain as a deployment annotation, but the build no longer requires it. A blank denylist cannot detect an origin that has not been identified; do not invent production domains.
 
 Production builds remain unbuilt and require non-empty, verified `YOMART_STAGING_API_ORIGINS` and `YOMART_STAGING_SITE_ORIGINS`. Production origins are not specified here.
 

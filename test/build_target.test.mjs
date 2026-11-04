@@ -41,15 +41,18 @@ test('explicit staging with no confirmed production origins accepts empty or uns
   assert.equal(resolveStorefrontTarget({ ...noProduction, YOMART_PRODUCTION_SITE_ORIGINS: '' }).blockedSiteOrigins.length, 0);
 });
 
-test('an unset API denylist requires the explicit no-production-API staging assertion', () => {
-  const { YOMART_NO_PRODUCTION_API, YOMART_PRODUCTION_API_ORIGINS, ...missing } = {
-    ...staging,
-    YOMART_PRODUCTION_API_ORIGINS: undefined,
-  };
-  assert.throws(() => resolveTestTarget(missing), /YOMART_PRODUCTION_API_ORIGINS/);
-  assert.equal(resolveTestTarget({ ...missing, YOMART_NO_PRODUCTION_API: 'true' }).buildEnv, 'staging');
+test('staging accepts an unset or explicitly empty production API denylist', () => {
+  const { YOMART_PRODUCTION_API_ORIGINS: _omitted, ...missing } = staging;
+  assert.equal(resolveTestTarget(missing).buildEnv, 'staging');
   assert.throws(() => resolveTestTarget({ ...staging, YOMART_NO_PRODUCTION_API: 'true' }), /cannot be combined/);
   assert.equal(resolveTestTarget({ ...missing, YOMART_PRODUCTION_API_ORIGINS: '' }).buildEnv, 'staging');
+});
+
+test('staging API must match the separately validated expected API origin', () => {
+  assert.throws(
+    () => resolveTestTarget({ ...staging, VITE_API_BASE_URL: 'https://other.stage.invalid.test' }),
+    /VITE_API_BASE_URL must match YOMART_EXPECTED_API_ORIGIN/,
+  );
 });
 
 test('staging rejects configured production API or site overlap', () => {
@@ -75,6 +78,8 @@ test('production requires non-empty staging API and site denylists and rejects o
   };
   assert.throws(() => resolveTestTarget({ ...production, YOMART_STAGING_API_ORIGINS: '' }), /YOMART_STAGING_API_ORIGINS/);
   assert.throws(() => resolveTestTarget({ ...production, YOMART_STAGING_SITE_ORIGINS: undefined }), /YOMART_STAGING_SITE_ORIGINS/);
+  assert.throws(() => resolveTestTarget({ ...production, YOMART_STAGING_API_ORIGINS: 'https://stage.invalid.test/path' }), /origin|path/i);
+  assert.throws(() => resolveTestTarget({ ...production, YOMART_STAGING_SITE_ORIGINS: 'https://*.invalid.test' }), /wildcard|placeholder/i);
   assert.throws(() => resolveTestTarget({ ...production, VITE_API_BASE_URL: 'https://api.stage.invalid.test', YOMART_EXPECTED_API_ORIGIN: 'https://api.stage.invalid.test' }), /staging API/);
   assert.throws(() => resolveTestTarget({ ...production, VITE_EXPECTED_SITE_ORIGIN: 'https://shop.stage.invalid.test' }), /staging site/);
 });
