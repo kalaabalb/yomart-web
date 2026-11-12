@@ -57,6 +57,13 @@ jobs:
           for route in products cart login support; do
             curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 "https://yomart.onrender.com/${route}" -o /dev/null
           done
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/privacy-policy.html -o /tmp/yomart-privacy.html
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/account-deletion.html -o /tmp/yomart-deletion.html
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/account-deletion-config.js -o /tmp/yomart-deletion-config.js
+          grep -q 'noindex,nofollow,noarchive' /tmp/yomart-privacy.html
+          grep -q 'noindex,nofollow,noarchive' /tmp/yomart-deletion.html
+          grep -q 'https://yomart-api.onrender.com' /tmp/yomart-deletion-config.js
+          grep -q 'REPLACE BEFORE PUBLICATION' /tmp/yomart-privacy.html
           chrome --version
           chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/storefront-desktop.png https://yomart.onrender.com/
           chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-mobile.png https://yomart.onrender.com/
