@@ -6,10 +6,12 @@ import { imageUrl, priceLabel } from '../api/http.js';
 import { useCart } from '../cart/CartContext.jsx';
 import { estimateCartSubtotal } from '../cart/cart.js';
 import { CatalogImage } from '../components/CatalogCards.jsx';
+import { deployment } from '../config/runtime.js';
 import { ErrorState, LoadingState } from '../components/States.jsx';
 
 export default function CartPage() {
   const { items, itemCount, removeProduct, updateQuantity } = useCart();
+  const preview = deployment.buildEnv !== 'production';
   const [catalog, setCatalog] = useState({ loading: true, products: new Map(), error: '' });
   const [revision, setRevision] = useState(0);
   const productIds = items.map((item) => item.productId).sort();
@@ -70,7 +72,7 @@ export default function CartPage() {
             <div className="cart-line-copy">
               <span className="product-meta">{product?.proCategoryId?.name || 'YoMart catalog'}</span>
               <h2>{product?.name || 'Product unavailable'}</h2>
-              {product ? <><strong>{priceLabel(Number(product.offerPrice) > 0 && Number(product.offerPrice) < Number(product.price) ? product.offerPrice : product.price)}</strong><span className={outOfStock || item.quantity > Number(product.quantity) ? 'cart-stock cart-stock-warning' : 'cart-stock'}>{outOfStock ? 'Out of stock' : stockKnown && item.quantity > Number(product.quantity) ? `Only ${product.quantity} currently available` : stockKnown ? `${product.quantity} in stock` : 'Stock not listed'}</span></> : <span className="cart-stock cart-stock-warning">Unavailable in the current catalog</span>}
+              {product ? <><strong>{preview ? 'Price to be confirmed' : priceLabel(Number(product.offerPrice) > 0 && Number(product.offerPrice) < Number(product.price) ? product.offerPrice : product.price)}</strong>{!preview && <span className={outOfStock || item.quantity > Number(product.quantity) ? 'cart-stock cart-stock-warning' : 'cart-stock'}>{outOfStock ? 'Out of stock' : stockKnown && item.quantity > Number(product.quantity) ? `Only ${product.quantity} currently available` : stockKnown ? `${product.quantity} in stock` : 'Stock not listed'}</span>}</> : <span className="cart-stock cart-stock-warning">Unavailable in the current catalog</span>}
               <div className="cart-line-actions">
                 <div className="quantity-control" aria-label={`Quantity for ${product?.name || 'unavailable product'}`}>
                   <button type="button" aria-label="Decrease quantity" disabled={item.quantity <= 1} onClick={() => updateQuantity(item.productId, item.quantity - 1)}><Minus size={14} /></button>
@@ -86,10 +88,10 @@ export default function CartPage() {
       <aside className="cart-summary">
         <span className="eyebrow">Order summary</span>
         <div className="cart-summary-row"><span>Items</span><strong>{itemCount}</strong></div>
-        <div className="cart-summary-row cart-subtotal"><span>Current catalog subtotal</span><strong>{allPricesAvailable ? priceLabel(subtotal) : 'Unavailable'}</strong></div>
-        <p>Delivery fee and final order totals are confirmed by the backend during checkout.</p>
+        <div className="cart-summary-row cart-subtotal"><span>{preview ? 'Catalog pricing' : 'Current catalog subtotal'}</span><strong>{preview ? 'To be confirmed' : allPricesAvailable ? priceLabel(subtotal) : 'Unavailable'}</strong></div>
+        <p>{preview ? 'This catalogue is for preview only. Prices and availability are being confirmed; ordering is temporarily unavailable.' : 'Delivery fee and final order totals are confirmed by the backend during checkout.'}</p>
         {!allProductsAvailable && <p className="cart-warning">Remove unavailable items or reconnect to refresh their details.</p>}
-        <Link className="button button-primary cart-summary-button" to="/checkout">Continue to checkout</Link>
+        {preview ? <button className="button button-primary cart-summary-button" type="button" disabled>Checkout unavailable in preview</button> : <Link className="button button-primary cart-summary-button" to="/checkout">Continue to checkout</Link>}
       </aside>
     </div>
   </div>;
