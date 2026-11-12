@@ -8,6 +8,7 @@ import { ErrorState, LoadingState } from '../components/States.jsx';
 import { CatalogImage } from '../components/CatalogCards.jsx';
 import { useCart } from '../cart/CartContext.jsx';
 import { RetailerContacts } from '../components/RetailerContacts.jsx';
+import { deployment } from '../config/runtime.js';
 
 export default function ProductPage() {
   const { id = '' } = useParams();
@@ -21,6 +22,7 @@ export default function ProductPage() {
   if (resource.error) return <div className="page-wrap"><Link className="back-link" to="/products"><ArrowLeft size={16} /> Back to catalog</Link><ErrorState message={resource.error} onRetry={resource.retry} /></div>;
   if (!product) return <div className="page-wrap"><Link className="back-link" to="/products"><ArrowLeft size={16} /> Back to catalog</Link><ErrorState message="This product could not be found in the catalog." /></div>;
 
+  const preview = deployment.buildEnv !== 'production';
   const hasOffer = Number(product.offerPrice) > 0 && Number(product.offerPrice) < Number(product.price);
   const inventoryKnown = product.quantity !== null && product.quantity !== undefined && product.quantity !== '' && Number.isFinite(Number(product.quantity));
   const available = inventoryKnown && Number(product.quantity) > 0;
@@ -36,12 +38,12 @@ export default function ProductPage() {
       <div className="detail-copy">
         <div className="detail-kicker"><span>{category?.name || 'YoMart catalog'}</span>{product.proBrandId?.name && <><i /> <span>{product.proBrandId.name}</span></>}</div>
         <h1>{product.name}</h1>
-        <div className="detail-price"><strong>{priceLabel(hasOffer ? product.offerPrice : product.price)}</strong>{hasOffer && <del>{priceLabel(product.price)}</del>}</div>
-        <div className={available ? 'availability available' : 'availability unavailable'}>{available ? <><Check size={16} /> Available in catalog</> : inventoryKnown ? <>Currently out of stock</> : <>Availability not listed</>}</div>
+        <div className="detail-price"><strong>{preview ? 'Price to be confirmed' : priceLabel(hasOffer ? product.offerPrice : product.price)}</strong>{!preview && hasOffer && <del>{priceLabel(product.price)}</del>}</div>
+        <div className={preview ? 'availability unavailable' : available ? 'availability available' : 'availability unavailable'}>{preview ? 'Availability to be confirmed' : available ? <><Check size={16} /> Available in catalog</> : inventoryKnown ? <>Currently out of stock</> : <>Availability not listed</>}</div>
         {product.description && <p className="detail-description">{product.description}</p>}
-        <div className="detail-facts"><div><span>Availability</span><strong>{available ? 'In stock' : inventoryKnown ? 'Out of stock' : 'Not listed'}</strong></div><div><span>Category</span><strong>{category?.name || 'Not listed'}</strong></div>{product.proBrandId?.name && <div><span>Brand</span><strong>{product.proBrandId.name}</strong></div>}</div>
-        <div className="detail-note"><PackageCheck size={19} /><p>Your cart is saved on this device. We’ll confirm the latest price and availability again at checkout.</p></div>
-        <button className="button button-primary detail-cta" type="button" disabled={inventoryKnown && !available} onClick={() => addProduct(product)}><ShoppingBag size={16} /> {inventoryKnown && !available ? 'Out of stock' : 'Add to cart'}</button>
+        <div className="detail-facts"><div><span>Availability</span><strong>{preview ? 'To be confirmed' : available ? 'In stock' : inventoryKnown ? 'Out of stock' : 'Not listed'}</strong></div><div><span>Category</span><strong>{category?.name || 'Not listed'}</strong></div>{product.proBrandId?.name && <div><span>Brand</span><strong>{product.proBrandId.name}</strong></div>}</div>
+        <div className="detail-note"><PackageCheck size={19} /><p>{preview ? 'This is a catalogue preview. Price and availability are being confirmed, and ordering is temporarily unavailable.' : 'Your cart is saved on this device. We’ll confirm the latest price and availability again at checkout.'}</p></div>
+        <button className="button button-primary detail-cta" type="button" disabled={preview || (inventoryKnown && !available)} onClick={() => addProduct(product)}><ShoppingBag size={16} /> {preview ? 'Ordering unavailable' : inventoryKnown && !available ? 'Out of stock' : 'Add to cart'}</button>
         {categoryId && <Link className="button button-secondary detail-cta" to={`/products?category=${encodeURIComponent(categoryId)}`}>More in {category.name} <ArrowRight size={16} /></Link>}
         {!categoryId && <Link className="button button-secondary detail-cta" to="/products">Continue browsing <ArrowRight size={16} /></Link>}
         <RetailerContacts placement="product_details" className="detail-contacts" />
