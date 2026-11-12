@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getBrands, getCategories, getCollections, getPosters, getProducts } from '../api/catalog.js';
 import { imageUrl, productId } from '../api/http.js';
 import { useResource } from '../hooks.js';
+import { deployment } from '../config/runtime.js';
 import { BrandMark, CatalogImage, CategoryTile, ProductGrid } from '../components/CatalogCards.jsx';
 import { EmptyState, ErrorState, LoadingState } from '../components/States.jsx';
 
@@ -18,6 +19,7 @@ function ProductSection({ title, eyebrow, products, loading, error, retry, link 
 }
 
 export default function HomePage() {
+  const preview = deployment.buildEnv !== 'production';
   const products = useCatalogData('home-products', (signal) => getProducts({}, { signal }));
   const categories = useCatalogData('home-categories', (signal) => getCategories({ signal }));
   const brands = useCatalogData('home-brands', (signal) => getBrands({ signal }));
@@ -33,9 +35,9 @@ export default function HomePage() {
       <div className="hero-copy">
         <span className="eyebrow"><Sparkles size={14} /> The YoMart edit</span>
         <h1>Good things.<br /><em>Well chosen.</em></h1>
-        <p>Explore the products and brands available in the YoMart catalog.</p>
+        <p>{preview ? 'Browse the YoMart catalogue preview while product details are being confirmed.' : 'Explore the products and brands available in the YoMart catalog.'}</p>
         <div className="hero-actions"><Link className="button button-primary" to="/products">Browse products <ArrowRight size={17} /></Link><a className="button button-ghost" href="#categories">Explore categories <MoveRight size={16} /></a></div>
-        <div className="hero-trust"><BadgeCheck size={16} /><span>Catalog details come directly from YoMart</span></div>
+        <div className="hero-trust"><BadgeCheck size={16} /><span>{preview ? 'Catalogue details are being reviewed before ordering opens' : 'Catalog details come directly from YoMart'}</span></div>
       </div>
       <div className="hero-art" aria-label={poster ? poster.posterName : 'YoMart catalog feature'}>
         <div className="hero-art-glow" />
@@ -53,10 +55,10 @@ export default function HomePage() {
       {categories.loading ? <LoadingState label="Loading categories" /> : categories.error ? <ErrorState message={categories.error} onRetry={categories.retry} /> : categories.value?.length ? <div className="category-grid">{categories.value.slice(0, 8).map((category) => <CategoryTile key={category._id || category.id} category={category} />)}</div> : <EmptyState title="No categories available" detail="Categories will appear here when they are available in the catalog." />}
     </section>
 
-    <ProductSection title="From the catalog" eyebrow="Available now" products={productList} loading={products.loading} error={products.error} retry={products.retry} />
+    <ProductSection title="From the catalog" eyebrow={preview ? 'Catalogue preview' : 'Available now'} products={productList} loading={products.loading} error={products.error} retry={products.retry} />
 
     <section className="content-section collection-section">
-      <div className="section-heading"><div><span className="eyebrow">Curated by YoMart</span><h2>Collections</h2></div><span className="muted-note">Selected from the live catalog</span></div>
+      <div className="section-heading"><div><span className="eyebrow">Curated by YoMart</span><h2>Collections</h2></div><span className="muted-note">{preview ? 'Preview catalogue' : 'Selected from the live catalog'}</span></div>
       {collections.loading ? <LoadingState label="Loading collections" /> : collections.error ? <ErrorState message={collections.error} onRetry={collections.retry} /> : collections.value?.length ? <div className="collection-list">{collections.value.slice(0, 3).map((collection, index) => {
         const items = (collection.productIds || []).map((item) => productsById.get(String(item?._id || item))).filter(Boolean).slice(0, 3);
         return <article className={`collection-card collection-tone-${index + 1}`} key={collection._id || collection.id}>
