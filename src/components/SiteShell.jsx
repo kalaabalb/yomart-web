@@ -18,7 +18,6 @@ export function SiteShell({ children }) {
   }
 
   return <div className="site-frame">
-    <div className="announcement"><span className="announcement-dot" /> A considered catalog, made simple <ArrowRight size={13} /></div>
     <header className="site-header">
       <Link className="wordmark" to="/" aria-label="YoMart home"><img src="/yomart_gold_mark.png" alt="" /><span>YoMart</span></Link>
       <nav id="main-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
@@ -45,7 +44,7 @@ export function SiteShell({ children }) {
     {notice && <div className="cart-toast" role="status">{notice}</div>}
     <main>{children}</main>
     <footer className="site-footer">
-      <div className="footer-brand"><img src="/yomart_gold_mark.png" alt="" /><div><strong>YoMart</strong><span>Thoughtful finds, clearly presented.</span></div></div>
+      <div className="footer-brand"><img src="/yomart_gold_mark.png" alt="" /><div><strong>YoMart</strong></div></div>
       <RetailerContacts placement="storefront_footer" className="footer-contacts" />
       <p>Product details and availability are provided by the YoMart catalog.</p>
       <Link to="/products">Explore the catalog <ArrowRight size={14} /></Link>
