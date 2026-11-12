@@ -36,6 +36,6 @@ The only enabled payment method is **Cash at shop or handover**. Customers pay a
 
 ## Visual evidence
 
-The latest CI screenshot artifact contains genuine 1440x1100 desktop and 390x844 mobile captures for the home, catalog, product detail, cart, login, support and admin sign-in pages. It is available from the [storefront Actions workflow](https://github.com/kalaabalb/yomart-web/actions).
+The latest CI run also executes real Playwright navigation checks: home → catalog → product detail, preview price/stock masking, disabled add-to-cart, cart, login, support, privacy/account-deletion drafts and admin sign-in. Its screenshot artifact contains genuine 1440x1100 desktop and 390x844 mobile captures for those routes. It is available from the [storefront Actions workflow](https://github.com/kalaabalb/yomart-web/actions).
 
 See the [launch readiness checklist](https://github.com/kalaabalb/yomart-docs/blob/main/docs/launch/readiness.md) before enabling sales or indexing the storefront.
