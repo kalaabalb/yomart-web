@@ -41,3 +41,30 @@ jobs:
           VITE_EXPECTED_SITE_ORIGIN: https://yomart.onrender.com
           YOMART_PRODUCTION_API_ORIGINS: ""
           YOMART_PRODUCTION_SITE_ORIGINS: ""
+
+      - name: Set up Chrome for live UI evidence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Capture real deployed storefront and admin screenshots
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/live-ui
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 --retry-all-errors --max-time 20 https://yomart.onrender.com/ -o /dev/null
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 --retry-all-errors --max-time 20 https://yomart-admin.onrender.com/ -o /dev/null
+          chrome --version
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/storefront-desktop.png https://yomart.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-mobile.png https://yomart.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/admin-desktop.png https://yomart-admin.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/admin-mobile.png https://yomart-admin.onrender.com/
+
+      - name: Upload genuine deployed UI screenshots
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: yomart-live-web-screenshots
+          path: artifacts/live-ui/*.png
+          if-no-files-found: error
+          retention-days: 30
