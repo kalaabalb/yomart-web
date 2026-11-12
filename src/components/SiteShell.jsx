@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../cart/CartContext.jsx';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { RetailerContacts } from './RetailerContacts.jsx';
+import { deployment } from '../config/runtime.js';
 
 export function SiteShell({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,6 +42,7 @@ export function SiteShell({ children }) {
       <Link className="bag-link" to="/cart" aria-label={`Shopping cart, ${itemCount} items`}><ShoppingBag size={19} />{itemCount > 0 && <span className="cart-count">{itemCount > 99 ? '99+' : itemCount}</span>}</Link>
       <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X /> : <Menu />}</button>
     </header>
+    {deployment.buildEnv !== 'production' && <div className="preview-catalog-notice" role="status"><strong>Preview catalogue</strong><span>Prices and availability are being confirmed. Ordering is temporarily unavailable.</span></div>}
     {notice && <div className="cart-toast" role="status">{notice}</div>}
     <main>{children}</main>
     <footer className="site-footer">
