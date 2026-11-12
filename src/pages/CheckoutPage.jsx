@@ -40,6 +40,8 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState(null);
   const [settingsError, setSettingsError] = useState('');
+  const [settingsRevision, setSettingsRevision] = useState(0);
+  const [catalogRevision, setCatalogRevision] = useState(0);
   const [catalog, setCatalog] = useState({ loading: true, products: new Map(), error: '' });
   const [address, setAddress] = useState({ phone: '', street: '', city: '' });
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -52,13 +54,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setSettingsError('');
     getCheckoutSettings({ signal: controller.signal }).then((value) => {
       setSettings(value);
       const firstMethod = value?.paymentMethods?.[0];
       if (firstMethod) setPaymentMethod(firstMethod.code);
     }).catch((error) => { if (!controller.signal.aborted) setSettingsError(error.message); });
     return () => controller.abort();
-  }, []);
+  }, [settingsRevision]);
 
   useEffect(() => {
     if (!items.length) {
@@ -78,7 +81,7 @@ export default function CheckoutPage() {
       setCatalog({ loading: false, products, error: failed ? 'Some cart items could not be checked against the live catalog.' : '' });
     });
     return () => controller.abort();
-  }, [items]);
+  }, [items, catalogRevision]);
 
   useEffect(() => {
     if (ownerId) setProofReference(readProofReference(ownerId));
@@ -143,8 +146,8 @@ export default function CheckoutPage() {
     <Link className="back-link" to="/cart"><ArrowLeft size={16} /> Back to cart</Link>
     <div className="page-intro"><span className="eyebrow">Destination and payment</span><h1>Complete your <em>order.</em></h1><p>Provide your destination city for coordination. You will collect your order from a collection point agreed with YoMart; your location is not the collection-point address.</p></div>
     {(catalog.loading || settings === null && !settingsError) && <LoadingState label="Preparing checkout" />}
-    {catalog.error && <ErrorState message={catalog.error} />}
-    {settingsError && <ErrorState message={`Payment settings could not be loaded: ${settingsError}`} />}
+    {catalog.error && <ErrorState message={catalog.error} onRetry={() => setCatalogRevision((value) => value + 1)} />}
+    {settingsError && <ErrorState message={`Payment settings could not be loaded: ${settingsError}`} onRetry={() => setSettingsRevision((value) => value + 1)} />}
     {!items.length && <section className="cart-empty"><h2>Your cart is empty</h2><Link className="button button-primary" to="/products">Browse products</Link></section>}
     {message && <p className={messageType === 'error' ? 'form-message form-message-error' : 'form-message'} role={messageType === 'error' ? 'alert' : 'status'}>{message}</p>}
     {items.length > 0 && <form className="checkout-layout" onSubmit={submit}>
