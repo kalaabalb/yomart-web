@@ -40,7 +40,7 @@ export default function ProductPage() {
         <div className={available ? 'availability available' : 'availability unavailable'}>{available ? <><Check size={16} /> Available in catalog</> : inventoryKnown ? <>Currently out of stock</> : <>Availability not listed</>}</div>
         {product.description && <p className="detail-description">{product.description}</p>}
         <div className="detail-facts"><div><span>Availability</span><strong>{available ? 'In stock' : inventoryKnown ? 'Out of stock' : 'Not listed'}</strong></div><div><span>Category</span><strong>{category?.name || 'Not listed'}</strong></div>{product.proBrandId?.name && <div><span>Brand</span><strong>{product.proBrandId.name}</strong></div>}</div>
-        <div className="detail-note"><PackageCheck size={19} /><p>Availability and pricing shown here are read from the current catalog. Checkout is not available on this storefront yet.</p></div>
+        <div className="detail-note"><PackageCheck size={19} /><p>Your cart is saved on this device. We’ll confirm the latest price and availability again at checkout.</p></div>
         <button className="button button-primary detail-cta" type="button" disabled={inventoryKnown && !available} onClick={() => addProduct(product)}><ShoppingBag size={16} /> {inventoryKnown && !available ? 'Out of stock' : 'Add to cart'}</button>
         {categoryId && <Link className="button button-secondary detail-cta" to={`/products?category=${encodeURIComponent(categoryId)}`}>More in {category.name} <ArrowRight size={16} /></Link>}
         {!categoryId && <Link className="button button-secondary detail-cta" to="/products">Continue browsing <ArrowRight size={16} /></Link>}
