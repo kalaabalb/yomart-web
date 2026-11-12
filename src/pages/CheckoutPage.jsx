@@ -10,6 +10,7 @@ import { estimateCartSubtotal } from '../cart/cart.js';
 import { checkoutOrderBody, clearCheckoutAttempt, confirmCheckout, getStableCheckoutKey, paymentProofRequired, safePaymentLogoUrl } from '../checkout/checkout.js';
 import { CatalogImage } from '../components/CatalogCards.jsx';
 import { ErrorState, LoadingState } from '../components/States.jsx';
+import { deployment } from '../config/runtime.js';
 
 const PROOF_LIMIT = 10 * 1024 * 1024;
 const PROOF_REF_PREFIX = 'yomart.checkout-proof.v1.';
@@ -35,6 +36,7 @@ function fileAsDataUrl(file) {
 }
 
 export default function CheckoutPage() {
+  const preview = deployment.buildEnv !== 'production';
   const { session, user } = useAuth();
   const { items, clearCart } = useCart();
   const navigate = useNavigate();
@@ -53,6 +55,7 @@ export default function CheckoutPage() {
   const ownerId = String(user?._id || user?.id || '');
 
   useEffect(() => {
+    if (preview) return undefined;
     const controller = new AbortController();
     setSettingsError('');
     getCheckoutSettings({ signal: controller.signal }).then((value) => {
@@ -64,6 +67,7 @@ export default function CheckoutPage() {
   }, [settingsRevision]);
 
   useEffect(() => {
+    if (preview) return undefined;
     if (!items.length) {
       setCatalog({ loading: false, products: new Map(), error: '' });
       return undefined;
@@ -141,6 +145,12 @@ export default function CheckoutPage() {
       setMessage(error.message || 'Order submission could not be confirmed. Keep the same details and retry.');
     } finally { setBusy(false); }
   }
+
+  if (preview) return <div className="page-wrap checkout-page">
+    <Link className="back-link" to="/cart"><ArrowLeft size={16} /> Back to cart</Link>
+    <div className="page-intro"><span className="eyebrow">Preview catalogue</span><h1>Checkout is <em>not available yet.</em></h1><p>YoMart is confirming product prices and availability. No orders or payments can be submitted during this preview.</p></div>
+    <section className="cart-empty"><h2>Ordering is temporarily unavailable</h2><p>You can continue browsing the catalogue. Your cart will remain saved on this device.</p><Link className="button button-primary" to="/products">Continue browsing</Link></section>
+  </div>;
 
   return <div className="page-wrap checkout-page">
     <Link className="back-link" to="/cart"><ArrowLeft size={16} /> Back to cart</Link>
