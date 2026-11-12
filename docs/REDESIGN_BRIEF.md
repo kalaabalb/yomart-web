@@ -14,7 +14,7 @@ Almost no copy is hard-coded. Visible words come from the API; the UI only owns 
 - Put every remaining string in one file (`src/content/strings.js`) so copy can be changed in one place.
 
 ## 2. Reference sites and what we take from each
-Verify each live before implementing; take the pattern, not the look or branding.
+**Status: these are recalled patterns, not yet checked against screenshots.** Gallery sites (Mobbin, Screens Design, Page Flows) were not reachable when this was written. When reference screenshots are added to `docs/references/`, they override this table. Take the pattern, not the look or branding.
 
 | Reference | Take this | Use on |
 | --- | --- | --- |
@@ -45,6 +45,18 @@ Sources consulted: ecommerce homepage/PLP/PDP best-practice roundups (mailmodo P
 **Product page:** swipeable gallery (thumbs on desktop), name, price + strikethrough + saving %, stock line, description, details list, quick facts, sticky buy bar on phones, "More in {category}". Related products row (same category) if available.
 
 **Cart / Checkout / Account / Orders:** keep logic; restyle with the same tokens; 44px+ controls.
+
+## 3b. Information flow (what the shopper sees and decides at each step)
+| Step | Shopper question | Must be visible | One tap away | Remove |
+| --- | --- | --- | --- | --- |
+| Home | "What do they sell?" | Search, categories, new arrivals | Any category, any product | Slogans, stats, filler banners |
+| Category / Shop | "Which one?" | Photo, name, price, stock cue, discount % | Filters (drawer on phone), sort, quick-add | Descriptions, ratings the data lacks |
+| Product | "Is it right, how much, can I get it?" | Gallery, price + saving, stock, Add to cart (sticky on phone) | Contact the retailer, related items | Tabs hiding key facts |
+| Cart | "What am I paying?" | Items, quantity steppers, total | Remove, continue shopping, Checkout | Upsells |
+| Checkout | "How do I finish fast?" | Only needed fields, order summary, payment choice, one primary button | Edit cart, sign in (guest allowed if the API supports it) | Account wall before the form |
+| Confirmation / Orders | "Did it work, where is it?" | Order number, status steps, retailer contact | Order details, shop again | Dead ends |
+
+State rules for every screen: loading = skeleton shaped like the final content; empty = one line + one action button; error = plain reason + Retry; offline = banner. Preserve cart across reload. Never lose typed form input on error. After add-to-cart, confirm inline (count pop + toast) without leaving the page.
 
 ## 4. Motion system
 Use `transform`/`opacity` only. Durations 160 / 260 / 500 ms, easing `cubic-bezier(.2,.7,.2,1)`.
