@@ -1,5 +1,7 @@
 # YoMart Customer Storefront
 
+Deployed staging storefront: https://yomart.onrender.com. Shared release, security, operations, and tester guidance: https://github.com/kalaabalb/yomart-docs.
+
 The customer-facing React/Vite storefront is a separate web client. It does not replace the Flutter app. Catalog, prices, inventory, payment settings, customer sessions, and orders come from the YoMart API; the browser is never authoritative for prices or stock.
 
 ## Customer experience
@@ -11,7 +13,7 @@ The customer-facing React/Vite storefront is a separate web client. It does not 
 - Cart persists only product IDs and quantities in browser local storage. Current product prices and availability are re-read from the API. The shown subtotal is an estimate.
 - Customer JWTs are held in JavaScript memory and clear on page reload/logout. There is no refresh-token or password-recovery flow.
 - Checkout requires a signed-in customer, required destination phone/city, optional area, and an active payment method returned by the checkout settings endpoint. Staff and customer agree a collection point separately; there is no delivery fee.
-- For methods requiring proof, the UI accepts JPEG, PNG, or WebP up to 10 MiB and uses the proof upload endpoint. It stores a proof record ID, not a provider URL. Provider privacy and legacy receipt remediation still require staging/security acceptance.
+- For methods requiring proof, the UI accepts JPEG, PNG, or WebP up to 10 MiB and uses the proof upload endpoint. It stores a proof record ID, not a provider URL. The current Cloudinary account is configured for authenticated proof storage; complete an end-to-end synthetic upload, authorized retrieval, and unauthorized-denial test before accepting real receipts.
 - Order submission sends item IDs/quantities, destination information, payment method, optional proof record ID, and a stable `Idempotency-Key`. The backend recalculates prices and stock. No payment gateway is integrated.
 - Order confirmation/history/details and account summary are customer-authenticated and use customer-scoped API routes. Profile editing and account deletion are not available here.
 - Customer support contacts are loaded dynamically; there are no hardcoded phone numbers or social handles.
@@ -50,7 +52,7 @@ The storefront uses the backend's `{ success, message, data }` response envelope
 
 Capabilities such as collection-specific browsing, product variant selection, token refresh, password reset, and payment gateway processing are not provided by this storefront/API contract and are not simulated.
 
-These are code-level integrations; this publication task does not submit orders, upload payment evidence, access production data, or claim hosted acceptance. Legacy public payment-proof URLs remain a release blocker until restricted/reconciled and verified.
+These are code-level integrations; this publication task does not submit orders, upload payment evidence, access production data, or claim hosted acceptance. The earlier Cloudinary account/asset issue is not assumed to apply to the current account. Verify current-account proof upload and retrieval behavior with a synthetic asset before accepting real receipts.
 
 ## Local development
 
