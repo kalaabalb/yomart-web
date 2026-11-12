@@ -48,8 +48,9 @@ export function SiteShell({ children }) {
     <footer className="site-footer">
       <div className="footer-brand"><img src="/yomart_gold_mark.png" alt="" /><div><strong>YoMart</strong></div></div>
       <RetailerContacts placement="storefront_footer" className="footer-contacts" />
-      <p>Product details and availability are provided by the YoMart catalog.</p>
+      <p>{deployment.buildEnv !== 'production' ? 'Preview catalogue. Prices and availability are being confirmed.' : 'Product details and availability are provided by the YoMart catalog.'}</p>
       <Link to="/products">Explore the catalog <ArrowRight size={14} /></Link>
+      <div className="footer-legal-links"><a href="/privacy-policy.html">Privacy policy</a><a href="/account-deletion.html">Account deletion</a></div>
     </footer>
   </div>;
 }
