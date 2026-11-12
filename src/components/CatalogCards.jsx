@@ -2,6 +2,7 @@ import { ArrowUpRight, Image as ImageIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { imageUrl, priceLabel, productId } from '../api/http.js';
+import { deployment } from '../config/runtime.js';
 
 export function CatalogImage({ src, alt = '', fallback = null, ...imageProps }) {
   const [failed, setFailed] = useState(false);
@@ -19,17 +20,18 @@ export function ProductCard({ product, index = 0 }) {
   const price = Number(product.offerPrice) > 0 && Number(product.offerPrice) < Number(product.price)
     ? product.offerPrice
     : product.price;
+  const preview = deployment.buildEnv !== 'production';
   const inventoryKnown = product.quantity !== null && product.quantity !== undefined && product.quantity !== '' && Number.isFinite(Number(product.quantity));
   return <Link className="product-card" to={`/products/${encodeURIComponent(id)}`} style={{ '--card-index': index }}>
     <div className="product-photo">
       <CatalogImage src={photo} alt={product.name || 'Catalog product'} loading="lazy" fallback={<div className="photo-missing"><ImageIcon size={28} /><span>Image unavailable</span></div>} />
-      {Number(product.quantity) > 0 && <span className="stock-badge"><i /> In stock</span>}
+      {!preview && Number(product.quantity) > 0 && <span className="stock-badge"><i /> In stock</span>}
       <span className="card-arrow"><ArrowUpRight size={17} /></span>
     </div>
     <div className="product-card-copy">
       <div className="product-meta"><span>{category || 'YoMart catalog'}</span>{product.proBrandId?.name && <span>{product.proBrandId.name}</span>}</div>
       <h3>{product.name || 'Unnamed catalog item'}</h3>
-      <div className="product-price-row"><strong>{priceLabel(price)}</strong>{inventoryKnown && Number(product.quantity) <= 0 && <span className="out-label">Out of stock</span>}</div>
+      <div className="product-price-row"><strong>{preview ? 'Price to be confirmed' : priceLabel(price)}</strong>{!preview && inventoryKnown && Number(product.quantity) <= 0 && <span className="out-label">Out of stock</span>}</div>
     </div>
   </Link>;
 }
