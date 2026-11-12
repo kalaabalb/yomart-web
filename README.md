@@ -28,6 +28,12 @@ The API independently fails closed for order creation and omits `price`, `offerP
 
 The only enabled payment method is **Cash at shop or handover**. Customers pay at shop pickup or directly to YoMart staff when they hand over the order. No online payment gateway or bank/wallet method is configured. Customer-facing support contact records are currently empty and must be provided by the owner before launch.
 
+## Privacy and account deletion
+
+- Privacy policy draft: https://yomart.onrender.com/privacy-policy.html (noindex; owner/legal details still required; not approved for Play Console).
+- External account deletion: https://yomart.onrender.com/account-deletion.html (noindex draft, wired to the production account-deletion API).
+- The policy still contains publisher/support placeholders. Do not submit it to Google Play until the owner supplies the legal publisher name, monitored support email, public contact details and approved retention wording.
+
 ## Visual evidence
 
 The latest CI screenshot artifact contains genuine 1440x1100 desktop and 390x844 mobile captures for the home, catalog, product detail, cart, login, support and admin sign-in pages. It is available from the [storefront Actions workflow](https://github.com/kalaabalb/yomart-web/actions).
