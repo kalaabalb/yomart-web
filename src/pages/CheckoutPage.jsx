@@ -154,7 +154,7 @@ export default function CheckoutPage() {
 
   return <div className="page-wrap checkout-page">
     <Link className="back-link" to="/cart"><ArrowLeft size={16} /> Back to cart</Link>
-    <div className="page-intro"><span className="eyebrow">Destination and payment</span><h1>Complete your <em>order.</em></h1><p>Provide your destination city for coordination. You will collect your order from a collection point agreed with YoMart; your location is not the collection-point address.</p></div>
+    <div className="page-intro"><span className="eyebrow">Destination and payment</span><h1>Complete your <em>order.</em></h1><p>Provide your destination city for coordination. You may collect at the shop or arrange a handover with YoMart staff; staff will confirm the handover details with you.</p></div>
     {(catalog.loading || settings === null && !settingsError) && <LoadingState label="Preparing checkout" />}
     {catalog.error && <ErrorState message={catalog.error} onRetry={() => setCatalogRevision((value) => value + 1)} />}
     {settingsError && <ErrorState message={`Payment settings could not be loaded: ${settingsError}`} onRetry={() => setSettingsRevision((value) => value + 1)} />}
