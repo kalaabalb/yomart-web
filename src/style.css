@@ -103,6 +103,9 @@ main > .page-wrap, main > .hero-wrap, main > .catalog-ribbon, main > .content-se
 /* Shared chrome */
 .announcement { min-height: 32px; display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 5px var(--page-gutter); color: #e7edf5; background: var(--color-navy-950); font-size: 10px; font-weight: var(--weight-medium); letter-spacing: .075em; }
 .announcement-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-gold-300); }
+.preview-catalog-notice { width: var(--content); display: flex; align-items: center; justify-content: center; gap: 9px; margin: 12px auto 0; padding: 10px 15px; border: 1px solid #e7d4a6; border-radius: var(--radius-md); color: #604719; background: #fff8e8; font-size: 11px; line-height: 1.45; text-align: center; }
+.preview-catalog-notice strong { flex: none; color: #74551e; font-weight: var(--weight-bold); }
+@media (max-width: 600px) { .preview-catalog-notice { align-items: flex-start; flex-direction: column; gap: 2px; margin-top: 9px; padding: 10px 12px; font-size: 10px; text-align: left; } }
 .site-header { position: sticky; z-index: 20; top: 0; width: 100%; min-height: 78px; display: flex; align-items: center; gap: clamp(14px, 2.3vw, 32px); padding-inline: max(var(--page-gutter), calc((100% - var(--content-width)) / 2)); border-bottom: 1px solid rgb(203 213 225 / 72%); background: rgb(255 255 255 / 95%); box-shadow: 0 4px 20px rgb(20 41 67 / 4%); backdrop-filter: blur(16px); }
 .wordmark { flex: none; display: inline-flex; align-items: center; gap: 9px; color: var(--color-navy-950); font: var(--weight-heavy) 20px/1 var(--font-display); letter-spacing: -.055em; }
 .wordmark img { width: 38px; height: 44px; object-fit: contain; filter: saturate(.85) brightness(.82) contrast(1.12); }
