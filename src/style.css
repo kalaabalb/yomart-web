@@ -651,3 +651,6 @@ main > .page-wrap, main > .hero-wrap, main > .catalog-ribbon, main > .content-se
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.footer-legal-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.footer-legal-links a { color: var(--color-muted, #6a7b90); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
