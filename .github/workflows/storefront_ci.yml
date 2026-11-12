@@ -46,6 +46,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: browser-actions/setup-chrome@v1
 
+      - name: Verify real public navigation and preview-safe interactions
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          npm install --no-save --package-lock=false playwright-core
+          CHROME_BIN="$(command -v chrome)" node tooling/live_ui_smoke.mjs
+
       - name: Capture real deployed storefront and admin screenshots
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
