@@ -14,9 +14,9 @@ page.on('pageerror', (error) => pageErrors.push(error.message));
 try {
   await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.getByText(/Preview catalogue/i).first().waitFor({ state: 'visible', timeout: 30000 });
-  await page.getByRole('link', { name: /Browse products/i }).click();
+  await page.getByRole('link', { name: 'Shop', exact: true }).click();
   await page.waitForURL(/\/products(?:\?.*)?$/, { timeout: 30000 });
-  const firstCard = page.locator('a.product-card').first();
+  const firstCard = page.locator('a.product-card-link').first();
   await firstCard.waitFor({ state: 'visible', timeout: 30000 });
   assert.ok(await page.getByText('Price to be confirmed').count() > 0, 'catalog cards must mask sample prices');
   assert.equal(await page.getByText('In stock', { exact: true }).count(), 0, 'catalog must not show synthetic stock');

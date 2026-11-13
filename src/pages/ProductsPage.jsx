@@ -1,9 +1,9 @@
-import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Search, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getCategories, getProducts } from '../api/catalog.js';
 import { ProductGrid } from '../components/CatalogCards.jsx';
-import { EmptyState, ErrorState, LoadingState } from '../components/States.jsx';
+import { EmptyState, ErrorState, ProductSkeletons } from '../components/States.jsx';
 import { useResource } from '../hooks.js';
 import { deployment } from '../config/runtime.js';
 
@@ -14,6 +14,7 @@ export default function ProductsPage() {
   const category = params.get('category') || '';
   const [input, setInput] = useState(search);
   const [stockOnly, setStockOnly] = useState(false);
+  const searchRef = useRef(null);
   useEffect(() => setInput(search), [search]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -35,15 +36,21 @@ export default function ProductsPage() {
     setParams(next, { replace: true });
   }
 
+  const activeCategory = (categories.value || []).find((item) => (item._id || item.id) === category);
   return <div className="catalog-page page-wrap">
-    <div className="page-intro"><span className="eyebrow">The YoMart catalog</span><h1>Find your next <em>favorite.</em></h1><p>Search by product name or browse the available categories.</p></div>
+    <div className="page-intro"><span className="eyebrow">The YoMart catalog</span><h1>{activeCategory ? <>{activeCategory.name}<em>.</em></> : <>Find your next <em>favorite.</em></>}</h1><p>Search by product name or browse the available categories.</p></div>
     <section className="catalog-controls" aria-label="Catalog filters">
-      <label className="catalog-search"><Search size={18} /><input value={input} onChange={(event) => setInput(event.target.value)} placeholder="Search products by name" aria-label="Search products by name" />{input && <button type="button" aria-label="Clear search" onClick={() => setInput('')}><X size={15} /></button>}</label>
-      <label className="select-control"><SlidersHorizontal size={16} /><span className="sr-only">Filter by category</span><select value={category} onChange={(event) => changeCategory(event.target.value)}><option value="">All categories</option>{(categories.value || []).map((item) => <option key={item._id || item.id} value={item._id || item.id}>{item.name}</option>)}</select></label>
-      {!preview && <label className="stock-filter"><input type="checkbox" checked={stockOnly} onChange={(event) => setStockOnly(event.target.checked)} /><span>In stock</span></label>}
+      <div className="catalog-controls-row">
+        <label className="catalog-search"><Search size={19} /><input ref={searchRef} value={input} onChange={(event) => setInput(event.target.value)} placeholder="Search products" aria-label="Search products by name" enterKeyHint="search" />{input && <button type="button" aria-label="Clear search" onClick={() => setInput('')}><X size={16} /></button>}</label>
+        {!preview && <label className="stock-filter"><input type="checkbox" checked={stockOnly} onChange={(event) => setStockOnly(event.target.checked)} /><span className="dot" aria-hidden="true" /><span>In stock</span></label>}
+      </div>
+      <div className="chip-row" role="group" aria-label="Filter by category">
+        <button type="button" className={category ? 'chip' : 'chip is-active'} aria-pressed={!category} onClick={() => changeCategory('')}>All</button>
+        {(categories.value || []).map((item) => { const value = item._id || item.id; return <button type="button" key={value} className={category === value ? 'chip is-active' : 'chip'} aria-pressed={category === value} onClick={() => changeCategory(value)}>{item.name}</button>; })}
+      </div>
     </section>
-    <div className="catalog-results"><span>{resource.loading ? 'Loading catalog' : `${products.length} ${products.length === 1 ? 'product' : 'products'}`}</span><span>Catalog results update from YoMart</span></div>
-    {resource.loading ? <LoadingState label="Loading products" /> : resource.error ? <ErrorState message={resource.error} onRetry={resource.retry} /> : products.length ? <ProductGrid products={products} /> : <EmptyState title="No matching products" detail={preview ? "Try another name or category." : "Try another name or category, or clear the in-stock filter."} />}
+    <div className="catalog-results"><span>{resource.loading ? 'Loading catalog' : `${products.length} ${products.length === 1 ? 'product' : 'products'}`}</span><span>{preview ? 'Preview catalogue; prices and availability are being confirmed' : 'Catalog results update from YoMart'}</span></div>
+    {resource.loading ? <ProductSkeletons /> : resource.error ? <ErrorState message={resource.error} onRetry={resource.retry} /> : products.length ? <ProductGrid products={products} /> : <EmptyState title="No matching products" detail={preview ? 'Try another name or category.' : 'Try another name or category, or clear the in-stock filter.'} />}
     {categories.error && <p className="inline-warning">Categories could not be loaded. Product search is still available.</p>}
   </div>;
 }

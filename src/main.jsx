@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { SiteShell } from './components/SiteShell.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
@@ -21,7 +21,7 @@ import { useAuth } from './auth/AuthContext.jsx';
 import './style.css';
 
 function NotFound() {
-  return <div className="not-found page-wrap"><span className="eyebrow">Page not found</span><h1>This page isn’t in the catalog.</h1><a className="button button-primary" href="/">Return home</a></div>;
+  return <div className="not-found page-wrap"><span className="eyebrow">Page not found</span><h1>This page isn’t in the catalog.</h1><Link className="button button-primary" to="/">Return home</Link></div>;
 }
 
 function RequireCustomerSession({ children }) {
