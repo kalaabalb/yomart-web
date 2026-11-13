@@ -1,6 +1,6 @@
 /*
-  YoMart storefront — "Warm Editorial" design system.
-  Paper-and-ink palette, serif display type, studio-toned product tiles, mobile-first spacing.
+  YoMart storefront — premium monochrome electronics design system.
+  Ink, white and silver surfaces with restrained motion and mobile-first spacing.
   Visual values live in the tokens below; legacy token names (navy / blue / gold) are kept so
   cart, checkout, account and order screens inherit the new look automatically.
 */
@@ -902,4 +902,28 @@ main > * { animation: page-enter 520ms var(--ease-emphasized) both; }
 }
 @media (max-width: 380px) {
   .remove-cart-item { gap: 3px; }
+}
+
+/* Staging remains visibly non-transactional, even with the redesign chrome. */
+.preview-catalog-notice {
+  width: var(--content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 12px auto 0;
+  padding: 10px 15px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+.preview-catalog-notice strong { flex: none; color: var(--color-navy-950); font-weight: var(--weight-bold); }
+.footer-legal-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.footer-legal-links a { color: var(--color-text-muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 600px) {
+  .preview-catalog-notice { align-items: flex-start; flex-direction: column; gap: 2px; margin-top: 9px; padding: 10px 12px; font-size: 10px; text-align: left; }
 }

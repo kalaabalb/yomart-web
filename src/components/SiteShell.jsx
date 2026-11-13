@@ -5,6 +5,7 @@ import { useCart } from '../cart/CartContext.jsx';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { useRevealOnScroll } from '../hooks.js';
 import { RetailerContacts } from './RetailerContacts.jsx';
+import { deployment } from '../config/runtime.js';
 
 export function SiteShell({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,13 +66,15 @@ export function SiteShell({ children }) {
       <Link className="bag-link" to="/cart" aria-label={`Shopping cart, ${itemCount} items`}><ShoppingBag size={20} />{itemCount > 0 && <span className="cart-count" key={itemCount}>{count}</span>}</Link>
       <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
     </header>
+    {deployment.buildEnv !== 'production' && <div className="preview-catalog-notice" role="status"><strong>Preview catalogue</strong><span>Prices and availability are being confirmed. Ordering is temporarily unavailable.</span></div>}
     {notice && <div className="cart-toast" role="status">{notice}</div>}
     <main className="route-stage">{children}</main>
     <footer className="site-footer">
       <div className="footer-brand"><img src="/yomart_gold_mark.png" alt="" /><div><strong>YoMart</strong><span>Thoughtful finds, clearly presented.</span></div></div>
       <RetailerContacts placement="storefront_footer" className="footer-contacts" />
-      <p>Product details, prices and availability come straight from the YoMart catalog.</p>
+      <p>{deployment.buildEnv !== 'production' ? 'Preview catalogue. Prices and availability are being confirmed.' : 'Product details and availability are provided by the YoMart catalog.'}</p>
       <Link to="/products">Explore the catalog <ArrowRight size={16} /></Link>
+      <div className="footer-legal-links"><a href="/privacy-policy.html">Privacy policy</a><a href="/account-deletion.html">Account deletion</a></div>
     </footer>
   </div>;
 }

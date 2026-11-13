@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { imageUrl, priceLabel, productId } from '../api/http.js';
 import { useCart } from '../cart/CartContext.jsx';
+import { deployment } from '../config/runtime.js';
 
 export function CatalogImage({ src, alt = '', fallback = null, ...imageProps }) {
   const [failed, setFailed] = useState(false);
@@ -34,6 +35,7 @@ export function ProductCard({ product, index = 0 }) {
   const price = percent ? product.offerPrice : product.price;
   const inventoryKnown = product.quantity !== null && product.quantity !== undefined && product.quantity !== '' && Number.isFinite(Number(product.quantity));
   const soldOut = inventoryKnown && Number(product.quantity) <= 0;
+  const preview = deployment.buildEnv !== 'production';
   const name = product.name || 'Unnamed catalog item';
 
   function quickAdd() {
@@ -48,14 +50,14 @@ export function ProductCard({ product, index = 0 }) {
     <div className={alt ? 'product-photo has-alt' : 'product-photo'}>
       <CatalogImage className="photo-main" src={photo} alt="" loading="lazy" decoding="async" fallback={<div className="photo-missing"><ImageIcon size={28} /><span>Image unavailable</span></div>} />
       {alt && <CatalogImage className="photo-alt" src={alt} alt="" loading="lazy" decoding="async" />}
-      {Number(product.quantity) > 0 && !percent && <span className="stock-badge"><i /> In stock</span>}
-      {percent > 0 && <span className="sale-badge">−{percent}%</span>}
-      {!soldOut && <button type="button" className={added ? 'quick-add is-added' : 'quick-add'} aria-label={`Add ${name} to cart`} onClick={quickAdd}>{added ? <Check size={20} /> : <Plus size={22} />}</button>}
+      {!preview && Number(product.quantity) > 0 && !percent && <span className="stock-badge"><i /> In stock</span>}
+      {!preview && percent > 0 && <span className="sale-badge">−{percent}%</span>}
+      {!preview && !soldOut && <button type="button" className={added ? 'quick-add is-added' : 'quick-add'} aria-label={`Add ${name} to cart`} onClick={quickAdd}>{added ? <Check size={20} /> : <Plus size={22} />}</button>}
     </div>
     <div className="product-card-copy">
       <div className="product-meta"><span>{category || 'YoMart catalog'}</span>{product.proBrandId?.name && <span>{product.proBrandId.name}</span>}</div>
       <h3>{name}</h3>
-      <div className="product-price-row"><strong>{priceLabel(price)}</strong>{percent > 0 && <del>{priceLabel(product.price)}</del>}{soldOut && <span className="out-label">Out of stock</span>}</div>
+      <div className="product-price-row"><strong>{preview ? 'Price to be confirmed' : priceLabel(price)}</strong>{!preview && percent > 0 && <del>{priceLabel(product.price)}</del>}{!preview && soldOut && <span className="out-label">Out of stock</span>}</div>
     </div>
     <Link className="product-card-link" to={`/products/${encodeURIComponent(id)}`} aria-label={`View ${name}`} />
   </article>;

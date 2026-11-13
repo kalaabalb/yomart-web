@@ -1,0 +1,97 @@
+name: Customer Storefront CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storefront-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build and validate staging artifact
+        run: npm run build
+        env:
+          YOMART_BUILD_ENV: staging
+          VITE_API_BASE_URL: https://yomart-api.onrender.com
+          YOMART_EXPECTED_API_ORIGIN: https://yomart-api.onrender.com
+          VITE_EXPECTED_SITE_ORIGIN: https://yomart.onrender.com
+          YOMART_PRODUCTION_API_ORIGINS: ""
+          YOMART_PRODUCTION_SITE_ORIGINS: ""
+
+      - name: Set up Chrome for live UI evidence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Verify real public navigation and preview-safe interactions
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          npm install --no-save --package-lock=false playwright-core
+          CHROME_BIN="$(command -v chrome)" node tooling/live_ui_smoke.mjs
+
+      - name: Capture real deployed storefront and admin screenshots
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/live-ui
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 --retry-all-errors --max-time 20 https://yomart.onrender.com/ -o /dev/null
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 --retry-all-errors --max-time 20 https://yomart-admin.onrender.com/ -o /dev/null
+          for route in products cart login support; do
+            curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 "https://yomart.onrender.com/${route}" -o /dev/null
+          done
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/privacy-policy.html -o /tmp/yomart-privacy.html
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/account-deletion.html -o /tmp/yomart-deletion.html
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors --max-time 20 https://yomart.onrender.com/account-deletion-config.js -o /tmp/yomart-deletion-config.js
+          grep -q 'noindex,nofollow,noarchive' /tmp/yomart-privacy.html
+          grep -q 'noindex,nofollow,noarchive' /tmp/yomart-deletion.html
+          grep -q 'https://yomart-api.onrender.com' /tmp/yomart-deletion-config.js
+          grep -q 'REPLACE BEFORE PUBLICATION' /tmp/yomart-privacy.html
+          chrome --version
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/storefront-desktop.png https://yomart.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-mobile.png https://yomart.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/admin-desktop.png https://yomart-admin.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/admin-mobile.png https://yomart-admin.onrender.com/
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/storefront-products-desktop.png https://yomart.onrender.com/products
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-products-mobile.png https://yomart.onrender.com/products
+          PRODUCT_ID="$(node --input-type=module -e 'const r=await fetch("https://yomart-api.onrender.com/products"); if(!r.ok) process.exit(2); const p=await r.json(); const rows=Array.isArray(p)?p:Array.isArray(p.data)?p.data:Array.isArray(p.data?.items)?p.data.items:[]; const product=rows.find(x=>x?._id||x?.id); process.stdout.write(String(product?._id||product?.id||""));')"
+          if [[ -n "$PRODUCT_ID" ]]; then
+            chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-product-detail-mobile.png "https://yomart.onrender.com/products/$PRODUCT_ID"
+          fi
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-cart-mobile.png https://yomart.onrender.com/cart
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/storefront-login-mobile.png https://yomart.onrender.com/login
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/storefront-support-desktop.png https://yomart.onrender.com/support
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=1440,1100 --screenshot=artifacts/live-ui/privacy-policy-draft-desktop.png https://yomart.onrender.com/privacy-policy.html
+          chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=20000 --window-size=390,844 --screenshot=artifacts/live-ui/account-deletion-draft-mobile.png https://yomart.onrender.com/account-deletion.html
+
+      - name: Upload genuine deployed UI screenshots
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: yomart-live-web-screenshots
+          path: artifacts/live-ui/*.png
+          if-no-files-found: error
+          retention-days: 30

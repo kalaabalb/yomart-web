@@ -5,9 +5,11 @@ import { getCategories, getProducts } from '../api/catalog.js';
 import { ProductGrid } from '../components/CatalogCards.jsx';
 import { EmptyState, ErrorState, ProductSkeletons } from '../components/States.jsx';
 import { useResource } from '../hooks.js';
+import { deployment } from '../config/runtime.js';
 
 export default function ProductsPage() {
   const [params, setParams] = useSearchParams();
+  const preview = deployment.buildEnv !== 'production';
   const search = params.get('q') || '';
   const category = params.get('category') || '';
   const [input, setInput] = useState(search);
@@ -40,15 +42,15 @@ export default function ProductsPage() {
     <section className="catalog-controls" aria-label="Catalog filters">
       <div className="catalog-controls-row">
         <label className="catalog-search"><Search size={19} /><input ref={searchRef} value={input} onChange={(event) => setInput(event.target.value)} placeholder="Search products" aria-label="Search products by name" enterKeyHint="search" />{input && <button type="button" aria-label="Clear search" onClick={() => setInput('')}><X size={16} /></button>}</label>
-        <label className="stock-filter"><input type="checkbox" checked={stockOnly} onChange={(event) => setStockOnly(event.target.checked)} /><span className="dot" aria-hidden="true" /><span>In stock</span></label>
+        {!preview && <label className="stock-filter"><input type="checkbox" checked={stockOnly} onChange={(event) => setStockOnly(event.target.checked)} /><span className="dot" aria-hidden="true" /><span>In stock</span></label>}
       </div>
       <div className="chip-row" role="group" aria-label="Filter by category">
         <button type="button" className={category ? 'chip' : 'chip is-active'} aria-pressed={!category} onClick={() => changeCategory('')}>All</button>
         {(categories.value || []).map((item) => { const value = item._id || item.id; return <button type="button" key={value} className={category === value ? 'chip is-active' : 'chip'} aria-pressed={category === value} onClick={() => changeCategory(value)}>{item.name}</button>; })}
       </div>
     </section>
-    <div className="catalog-results"><span>{resource.loading ? 'Loading catalog' : `${products.length} ${products.length === 1 ? 'product' : 'products'}`}</span><span>Prices and stock update live from YoMart</span></div>
-    {resource.loading ? <ProductSkeletons /> : resource.error ? <ErrorState message={resource.error} onRetry={resource.retry} /> : products.length ? <ProductGrid products={products} /> : <EmptyState title="No matching products" detail="Try another name or category, or clear the in-stock filter." />}
+    <div className="catalog-results"><span>{resource.loading ? 'Loading catalog' : `${products.length} ${products.length === 1 ? 'product' : 'products'}`}</span><span>{preview ? 'Preview catalogue; prices and availability are being confirmed' : 'Catalog results update from YoMart'}</span></div>
+    {resource.loading ? <ProductSkeletons /> : resource.error ? <ErrorState message={resource.error} onRetry={resource.retry} /> : products.length ? <ProductGrid products={products} /> : <EmptyState title="No matching products" detail={preview ? 'Try another name or category.' : 'Try another name or category, or clear the in-stock filter.'} />}
     {categories.error && <p className="inline-warning">Categories could not be loaded. Product search is still available.</p>}
   </div>;
 }
