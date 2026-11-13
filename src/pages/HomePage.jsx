@@ -41,13 +41,13 @@ export default function HomePage() {
       <div className="hero-copy">
         <span className="hero-pill"><i /> The YoMart catalog</span>
         <h1>Good things.<br /><em>Well chosen.</em></h1>
-        <p>Browse phones, audio and everyday tech with clear prices in Birr, clean product photos and honest stock levels.</p>
+        <p>Browse phones, audio and everyday tech using product information from the YoMart catalog.</p>
         <form className="hero-search" onSubmit={submitSearch} role="search">
           <Search size={20} aria-hidden="true" />
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search phones, speakers, watches…" aria-label="Search products by name" enterKeyHint="search" />
           <button type="submit">Search</button>
         </form>
-        {categoryChips.length > 0 && <div className="hero-chips" aria-label="Popular categories"><span>Popular:</span>{categoryChips.map((category) => <Link key={category._id || category.id} to={`/products?category=${encodeURIComponent(category._id || category.id || '')}`}>{category.name}</Link>)}</div>}
+        {categoryChips.length > 0 && <div className="hero-chips" aria-label="Browse categories"><span>Browse:</span>{categoryChips.map((category) => <Link key={category._id || category.id} to={`/products?category=${encodeURIComponent(category._id || category.id || '')}`}>{category.name}</Link>)}</div>}
         <dl className="hero-stats">
           <div><dt>Products</dt><dd>{products.loading ? '—' : productList.length}</dd></div>
           <div><dt>Categories</dt><dd>{categories.loading ? '—' : (categories.value || []).length}</dd></div>
@@ -72,7 +72,7 @@ export default function HomePage() {
     </section>
 
     <section className="content-section">
-      <div className="section-heading" data-reveal><div><span className="eyebrow">Available now</span><h2>Fresh in the catalog</h2></div><Link className="text-link" to="/products">View all <ArrowRight size={16} /></Link></div>
+      <div className="section-heading" data-reveal><div><span className="eyebrow">Catalog</span><h2>Products</h2></div><Link className="text-link" to="/products">View all <ArrowRight size={16} /></Link></div>
       {products.loading ? <ProductSkeletons /> : products.error ? <ErrorState message={products.error} onRetry={products.retry} /> : productList.length ? <ProductGrid products={productList.slice(0, 8)} /> : <EmptyState title="No products available" detail="Products will appear here when they are available in the catalog." />}
     </section>
 
@@ -88,7 +88,7 @@ export default function HomePage() {
     </section>}
 
     {(brands.loading || brands.error || brands.value?.length > 0) && <section className="content-section" id="brands">
-      <div className="section-heading" data-reveal><div><span className="eyebrow">Trusted names</span><h2>Brands in the catalog</h2></div></div>
+      <div className="section-heading" data-reveal><div><span className="eyebrow">Brands</span><h2>Brands in the catalog</h2></div></div>
       {brands.loading ? <CategorySkeletons count={5} /> : brands.error ? <ErrorState message={brands.error} onRetry={brands.retry} /> : <div className="brand-row" data-reveal>{brands.value.slice(0, 12).map((brand) => <BrandMark key={brand._id || brand.id} brand={brand} />)}</div>}
     </section>}
 

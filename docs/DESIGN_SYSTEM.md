@@ -1,61 +1,57 @@
-# YoMart Storefront Design System
+# YoMart Premium Storefront Design System
 
-The storefront uses a light editorial canvas with deep navy brand sections. Blue is reserved for actions and active navigation; muted gold marks selected premium details. Catalog content, prices, product imagery, availability, collection names, and poster copy continue to come from the backend.
+The customer storefront now uses a monochrome electronics-retail direction: deep ink gives the brand structure, white and soft silver surfaces frame real catalog content, and restrained motion adds depth. The official YoMart logo and existing favicon assets remain the source of brand marks. Product names, photos, prices, categories, collections, brands, stock and poster copy continue to come from the public API; there is no bundled demo catalog.
 
-Tokens are implemented in `src/style.css` under `:root`. Page styles consume those variables rather than defining page-specific color systems.
+## Color tokens
 
-## Color roles
+Tokens are implemented in `src/style.css`. Legacy `--color-navy-*`, `--color-blue-*`, and `--color-gold-*` names remain as compatibility aliases for existing commerce components. Their rendered roles are monochrome.
 
 | Role | Token | Value | Use |
 | --- | --- | --- | --- |
-| Brand navy 950 | `--color-navy-950` | `#071426` | Cinematic hero, footer/strong brand text |
-| Brand navy 900 | `--color-navy-900` | `#0b1b30` | Headings and dark card surfaces |
-| Brand navy 800 | `--color-navy-800` | `#132a45` | Secondary structure and strong labels |
-| Action blue 700 | `--color-blue-700` | `#1357b8` | Primary buttons, links, focus emphasis |
-| Action blue 600 | `--color-blue-600` | `#176bdb` | Hover action state |
-| Action blue 500 | `--color-blue-500` | `#3288f2` | Focus ring and input focus |
-| Premium gold 700 | `--color-gold-700` | `#8c6829` | Small premium labels on light backgrounds |
-| Premium gold 600 | `--color-gold-600` | `#ad853b` | Selective accent details |
-| Premium gold 300 | `--color-gold-300` | `#e1c47e` | Highlights on navy surfaces |
-| Canvas | `--color-canvas` | `#f4f6f9` | Main page background |
-| Surface | `--color-surface` | `#ffffff` | Cards, forms, navigation |
-| Muted surface | `--color-surface-muted` | `#eef2f6` | Quiet neutral treatment |
-| Main text | `--color-text` | `#172a40` | Body text |
-| Secondary text | `--color-text-secondary` | `#61738a` | Supporting copy |
-| Muted text | `--color-text-muted` | `#5c6f85` | Helper and metadata copy |
-| Borders | `--color-line`, `--color-line-strong` | `#dce3eb`, `#cbd5e1` | Separation and control boundaries |
-| Success | `--color-success`, `--color-success-soft` | `#18744c`, `#e7f5ee` | In-stock and confirmed states |
-| Warning | `--color-warning`, `--color-warning-soft` | `#94651c`, `#fff6e5` | Inventory and setup warnings |
-| Error | `--color-error`, `--color-error-soft` | `#b63e36`, `#fff0ee` | Validation and request failures |
-| Information | `--color-info`, `--color-info-soft` | `#245c9f`, `#eaf3fd` | Neutral guidance |
+| Primary ink | `--color-navy-950` | `#111214` | Header, hero, primary buttons, strong text |
+| Secondary ink | `--color-navy-900` | `#26282b` | Headings and dark surfaces |
+| Muted ink | `--color-navy-800`, `--color-text-secondary` | `#3a3d41`, `#4b4e52` | Navigation and supporting text |
+| Silver | `--color-gold-700`, `--color-gold-600`, `--color-gold-300` | `#575b60`, `#777c82`, `#d3d5d8` | Quiet accents, borders, dark-surface details |
+| Canvas | `--color-canvas` | `#fafafa` | Page background |
+| Surface | `--color-surface` | `#ffffff` | Product, cart, form and summary cards |
+| Muted surface | `--color-surface-muted`, `--color-studio` | `#eff0f1` | Product-image backgrounds and quiet controls |
+| Main/muted text | `--color-text`, `--color-text-muted` | `#18191b`, `#62666b` | Body and secondary copy |
+| Borders | `--color-line`, `--color-line-strong` | `#e1e2e4`, `#c9cbce` | Separation and control edges |
+| Success | `--color-success`, `--color-success-soft` | `#216846`, `#e7f3ec` | Actual positive states only |
+| Warning | `--color-warning`, `--color-warning-soft` | `#76531b`, `#f7f0e2` | Actual warnings only |
+| Error | `--color-error`, `--color-error-soft` | `#9b302b`, `#faeceb` | Actual errors only |
+| Information | `--color-info`, `--color-info-soft` | `#3f5368`, `#edf1f5` | Neutral guidance |
 
-Semantic colors are for actual state feedback only. Gold is not used as a general-purpose action color.
-On light surfaces, the muted body-copy token and gold eyebrow token were checked against the white and canvas backgrounds; both exceed 4.5:1. Primary blue buttons use white text and exceed 4.5:1 as well. This is a token-pair check, not a full automated accessibility audit of every rendered state.
+Primary actions are black with white text. Semantic colors are reserved for corresponding feedback. Sale red is used only for an actual sale badge supplied by product data.
 
-## Type, layout, and rhythm
+## Type, grid and spacing
 
-- Display family: `--font-display` (Manrope with system fallbacks); body: Inter/system UI.
-- Scale: `--text-xs` through `--text-3xl`, plus responsive `--text-hero`; weights range from 400 to 800.
-- Line heights: `--leading-tight` 1.08, `--leading-heading` 1.18, `--leading-body` 1.65.
-- Content width: `--content-width` 1240px. Responsive gutters: `--page-gutter` clamp from 18px to 64px.
-- Spacing scale: `--space-1` (4px), 2 (8px), 3 (12px), 4 (16px), 5 (20px), 6 (24px), 8 (32px), 10 (40px), 12 (48px), 16 (64px), 20 (80px), and 24 (96px).
-- Buttons: 48px standard and 40px compact. Fields: 48px.
-- Radii: 8px small, 12px medium, 18px large, 24px extra large, and pill.
-- Borders use the neutral line tokens. Cards use low-contrast borders and restrained shadows; hover adds lift and a slightly deeper shadow.
+- Display: Manrope with system fallbacks; body: Inter with system fallbacks.
+- Type scale: `--text-xs` `.8125rem`, `--text-sm` `.9375rem`, `--text-md` `1rem`; headings scale responsively with `clamp()`.
+- Weights: 400, 500, 600, 700 and 800. Body line-height is 1.65; compact display headings use approximately 1.04–1.16.
+- Content width: `--content-width: 1320px`; gutters use `clamp(18px, 4vw, 62px)`.
+- Spacing tokens: 4, 8, 12, 16, 20, 24, 32, 40, 48, 64 and 80px.
+- Buttons and fields: 48px default, 40px compact; radii: 7, 11, 16 and 22px plus pill.
+- Borders use silver neutrals. Shadows are low-contrast at rest and slightly deeper on hover.
 
 ## Imagery and motion
 
-- Product tiles use a square image frame; details use a large 1.1:1 frame; category marks use square thumbnails.
-- Catalog images use `contain` so device edges and product proportions remain visible. Category thumbnails use `cover`.
-- Missing images use the shared neutral fallback, never fabricated product artwork.
-- Motion uses 160ms, 240ms, and 500ms durations with the standard/emphasized easing tokens. Motion is limited to entrances, hover lift, image scale, and the slow hero image drift.
-- `prefers-reduced-motion: reduce` disables nonessential animation, transition, and smooth scrolling.
+- Product cards use square image frames; product details use a square gallery with swipe and thumbnail controls; category images use square crops.
+- Product images use API-backed assets and shared fallback UI when missing. The hero uses the current API poster or product image and an empty YoMart mark fallback; it does not invent catalog photography.
+- Motion uses 150ms, 240ms and 520ms timing tokens. It is limited to route entrance, section reveal, restrained image scale, and hover/focus feedback. `prefers-reduced-motion` disables nonessential hero motion and existing reduced-motion rules cover the rest.
+- Keyboard focus remains visibly outlined. Hover-revealed quick actions remain keyboard focusable.
 
-## Responsive breakpoints
+## Responsive layouts
 
-- Tablet layout changes: 1040px.
-- Collapsed navigation and intermediate composition: 820px.
-- Mobile layout: 600px.
-- Narrow-device refinements: 370px.
+- Tablet/navigation compression: 1100px and 900px.
+- Mobile composition and menu: 720px.
+- Small-screen control adjustments: 380px.
 
-Navigation, catalog grids, product detail, cart, checkout, forms, account, and order views each have explicit responsive rules; mobile is not a scaled desktop grid.
+Hero, product grid, gallery, checkout summary, forms, cart and navigation use dedicated responsive rules; mobile layouts are not a uniformly shrunken desktop grid.
+
+## Content and safety rules
+
+- All catalog information and customer contacts are loaded from the backend.
+- The storefront does not bundle mock products or use fake prices, stock counts, discounts or business claims.
+- Staging/local builds stay `noindex`; the admin application remains independently noindex.
+- Payment-proof URLs and customer order data are not included in public catalog sections or screenshots.

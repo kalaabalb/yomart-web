@@ -1,4 +1,4 @@
-import { ArrowRight, UserRound } from 'lucide-react';
+import { ArrowRight, LifeBuoy, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { loginCustomer, registerCustomer } from '../api/customer.js';
@@ -47,6 +47,14 @@ export default function AuthPage() {
     location.state?.from?.pathname === '/checkout' || location.state?.from === '/checkout';
   const protectedIntent = Boolean(location.state?.from);
   return <div className="page-wrap account-page auth-page">
+    <aside className="auth-side auth-side-brand" aria-hidden="true">
+      <img src="/yomart_gold_mark.png" alt="" />
+      <span className="eyebrow">YoMart customer account</span>
+      <h2>{mode === 'login' ? 'Welcome back.' : 'Create your account.'}</h2>
+      <p>{mode === 'login' ? 'Sign in to continue to your customer account.' : 'Register to continue with YoMart.'}</p>
+      <span className="auth-side-orbit auth-side-orbit-one" />
+      <span className="auth-side-orbit auth-side-orbit-two" />
+    </aside>
     <section className="account-card">
       <div className="account-icon"><UserRound size={23} /></div>
       <span className="eyebrow">YoMart customer account</span>
@@ -71,5 +79,12 @@ export default function AuthPage() {
       </Link>
       <p className="account-limitation">Your cart stays on this device. Password recovery and email verification are not currently available.</p>
     </section>
+    <aside className="auth-side auth-side-help">
+      <LifeBuoy size={21} aria-hidden="true" />
+      <span className="eyebrow">Customer support</span>
+      <h2>Need help?</h2>
+      <p>View the contact options currently published by YoMart.</p>
+      <Link className="button button-ghost" to="/support">Visit support <ArrowRight size={15} /></Link>
+    </aside>
   </div>;
 }

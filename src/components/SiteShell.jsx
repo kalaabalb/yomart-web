@@ -23,11 +23,15 @@ export function SiteShell({ children }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Every navigation starts at the top and closes the mobile menu.
+  // Route changes start at the top; in-page navigation lands on its section.
   useEffect(() => {
     setMenuOpen(false);
-    if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [location.pathname]);
+    if (location.hash) {
+      window.requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [location.pathname, location.hash]);
 
   function submitSearch(event) {
     event.preventDefault();
@@ -37,6 +41,7 @@ export function SiteShell({ children }) {
   const count = itemCount > 99 ? '99+' : itemCount;
 
   return <div className="site-frame">
+    <div className="announcement"><span className="announcement-dot" aria-hidden="true" /> Explore the YoMart catalog <ArrowRight size={13} aria-hidden="true" /></div>
     <header className={scrolled ? 'site-header is-scrolled' : 'site-header'}>
       <Link className="wordmark" to="/" aria-label="YoMart home"><img src="/yomart_gold_mark.png" alt="" /><span>YoMart</span></Link>
       <nav id="main-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
@@ -45,8 +50,8 @@ export function SiteShell({ children }) {
         <NavLink to="/support">Support</NavLink>
         {user && <NavLink to="/orders">Orders</NavLink>}
         {user && <NavLink to="/account">Account</NavLink>}
-        <a href="/#categories" onClick={() => setMenuOpen(false)}>Categories</a>
-        <a href="/#brands" onClick={() => setMenuOpen(false)}>Brands</a>
+        <Link to="/#categories" onClick={() => setMenuOpen(false)}>Categories</Link>
+        <Link to="/#brands" onClick={() => setMenuOpen(false)}>Brands</Link>
         {!user && <NavLink to="/login">Login</NavLink>}
         {!user && <NavLink to="/register">Register</NavLink>}
         {user && <button className="nav-logout" type="button" onClick={() => { logout(); setMenuOpen(false); navigate('/'); }}>Sign out <LogOut size={16} /></button>}
@@ -61,7 +66,7 @@ export function SiteShell({ children }) {
       <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
     </header>
     {notice && <div className="cart-toast" role="status">{notice}</div>}
-    <main>{children}</main>
+    <main className="route-stage">{children}</main>
     <footer className="site-footer">
       <div className="footer-brand"><img src="/yomart_gold_mark.png" alt="" /><div><strong>YoMart</strong><span>Thoughtful finds, clearly presented.</span></div></div>
       <RetailerContacts placement="storefront_footer" className="footer-contacts" />
