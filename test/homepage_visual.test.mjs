@@ -12,6 +12,9 @@ test('homepage hero uses monochrome illustrative artwork and preserves real shop
   assert.match(page, /homepage-headphones\.webp/);
   assert.doesNotMatch(page, /hero-float|hero-search|hero-panel/);
   assert.match(shell, /SHOP SMARTER\. LIVE BETTER\./);
+  for (const destination of ['Home', 'Shop', 'Categories', 'Deals', 'About', 'Contact', 'Brands', 'Login', 'Register']) {
+    assert.match(shell, new RegExp(`>${destination}<`));
+  }
   assert.match(shell, /Shopping cart, \$\{itemCount\} items/);
   assert.match(styles, /\.homepage \.hero-wrap[\s\S]*?radial-gradient/);
   assert.match(styles, /\.homepage \.hero-features/);
@@ -19,5 +22,10 @@ test('homepage hero uses monochrome illustrative artwork and preserves real shop
   assert.match(styles, /\.homepage \.hero-stage \{[^}]*z-index: auto/);
   assert.match(styles, /\.homepage \.hero-headphones \{[^}]*object-fit: contain/);
   assert.match(styles, /\.homepage \.hero-headphones \{[^}]*mix-blend-mode: screen/);
-  assert.match(styles, /\.homepage \.hero-features \{[^}]*min-height: 78px/);
+  assert.match(styles, /\.homepage \.hero-features \{[^}]*min-height: 100px/);
+  assert.match(styles, /\.homepage \.hero-silver-arc-one \{[^}]*border-top: 2px solid/);
+  assert.match(styles, /\.homepage \.hero-silver-arc-one \{[^}]*z-index: 3/);
+  assert.match(styles, /\.home-site-frame \.main-nav \.home-nav-auth-link \{ display: inline-flex; \}/);
+  assert.match(styles, /\.homepage \.hero-features small \{[^}]*font-size: \.67rem/);
+  assert.match(styles, /\.homepage \.hero-features > div:nth-child\(3\) \{ grid-column: 1 \/ -1/);
 });
