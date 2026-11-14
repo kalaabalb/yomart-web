@@ -1,7 +1,6 @@
-import { ArrowRight, ArrowUpRight, Search } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getBrands, getCategories, getCollections, getPosters, getProducts } from '../api/catalog.js';
+import { ArrowRight, ArrowUpRight, ShieldCheck, Tag, Store } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { getBrands, getCategories, getCollections, getProducts } from '../api/catalog.js';
 import { imageUrl, priceLabel, productId } from '../api/http.js';
 import { useResource } from '../hooks.js';
 import { deployment } from '../config/runtime.js';
@@ -12,59 +11,32 @@ function useCatalogData(name, loader) {
   return useResource(loader, name);
 }
 
-function pricePoint(product) {
-  return Number(product.offerPrice) > 0 && Number(product.offerPrice) < Number(product.price) ? product.offerPrice : product.price;
-}
-
 export default function HomePage() {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState('');
   const preview = deployment.buildEnv !== 'production';
   const products = useCatalogData('home-products', (signal) => getProducts({}, { signal }));
   const categories = useCatalogData('home-categories', (signal) => getCategories({ signal }));
   const brands = useCatalogData('home-brands', (signal) => getBrands({ signal }));
   const collections = useCatalogData('home-collections', (signal) => getCollections({ signal }));
-  const posters = useCatalogData('home-posters', (signal) => getPosters({ signal }));
   const productList = products.value || [];
-  const poster = (posters.value || [])[0];
-  const heroImage = imageUrl(poster?.imageUrl);
   const productsById = new Map(productList.map((product) => [productId(product), product]));
-  const withPhotos = productList.filter((product) => imageUrl(product.images?.[0]?.url));
-  const floating = (withPhotos.filter((product) => Number(product.quantity) > 0).length >= 2 ? withPhotos.filter((product) => Number(product.quantity) > 0) : withPhotos).slice(0, 3);
-  const categoryChips = (categories.value || []).slice(0, 6);
 
-  function submitSearch(event) {
-    event.preventDefault();
-    navigate(`/products${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`);
-  }
-
-  return <>
-    <section className="hero-wrap">
+  return <div className="homepage">
+    <section className="hero-wrap" aria-labelledby="homepage-hero-title">
       <div className="hero-copy">
-        <span className="hero-pill"><i /> The YoMart catalog</span>
-        <h1>Good things.<br /><em>Well chosen.</em></h1>
-        <p>{preview ? 'Browse the YoMart catalogue preview while product details are being confirmed.' : 'Browse phones, audio and everyday tech using product information from the YoMart catalog.'}</p>
-        <form className="hero-search" onSubmit={submitSearch} role="search">
-          <Search size={20} aria-hidden="true" />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search phones, speakers, watches…" aria-label="Search products by name" enterKeyHint="search" />
-          <button type="submit">Search</button>
-        </form>
-        {categoryChips.length > 0 && <div className="hero-chips" aria-label="Browse categories"><span>Browse:</span>{categoryChips.map((category) => <Link key={category._id || category.id} to={`/products?category=${encodeURIComponent(category._id || category.id || '')}`}>{category.name}</Link>)}</div>}
-        {!preview && <dl className="hero-stats">
-          <div><dt>Products</dt><dd>{products.loading ? '—' : productList.length}</dd></div>
-          <div><dt>Categories</dt><dd>{categories.loading ? '—' : (categories.value || []).length}</dd></div>
-          <div><dt>Brands</dt><dd>{brands.loading ? '—' : (brands.value || []).length}</dd></div>
-        </dl>}
+        <h1 id="homepage-hero-title"><span>Good things.</span><strong>Well chosen.</strong></h1>
+        <p>Discover quality products<br className="hero-copy-break" /> with a better shopping experience.</p>
+        <Link className="hero-shop-button" to="/products">Shop Now <ArrowRight size={20} aria-hidden="true" /></Link>
       </div>
-      <div className="hero-stage" aria-label={poster ? poster.posterName : 'Featured from the catalog'}>
-        <div className="hero-panel">
-          {heroImage ? <CatalogImage src={heroImage} alt={poster?.posterName || 'Featured catalog banner'} fallback={<span className="hero-panel-mark">YM</span>} /> : floating[0] ? <CatalogImage className="hero-panel-product" src={imageUrl(floating[0].images?.[0]?.url)} alt="" fallback={<span className="hero-panel-mark">YM</span>} /> : <span className="hero-panel-mark">YM</span>}
-          {poster && <div className="hero-panel-caption"><strong>{poster.posterName}</strong>{poster.subtitle && <span>{poster.subtitle}</span>}</div>}
-        </div>
-        {floating.slice(heroImage ? 0 : 1, heroImage ? 2 : 3).map((product, index) => <Link key={productId(product)} className={`hero-float hero-float-${index + 1}`} to={`/products/${encodeURIComponent(productId(product))}`}>
-          <span className="thumb"><CatalogImage src={imageUrl(product.images?.[0]?.url)} alt="" /></span>
-          <span><strong>{product.name}</strong><em>{preview ? 'Price to be confirmed' : priceLabel(pricePoint(product))}</em></span>
-        </Link>)}
+      <div className="hero-stage" aria-label="Illustrative black over-ear headphones against a silver studio backdrop">
+        <div className="hero-silver-arc hero-silver-arc-one" />
+        <div className="hero-silver-arc hero-silver-arc-two" />
+        <img className="hero-headphones" src="/homepage-headphones.webp" alt="" fetchPriority="high" />
+      </div>
+      <div className="hero-indicators" aria-hidden="true"><i className="active"/><i/><i/></div>
+      <div className="hero-features" aria-label="Shopping information">
+        <div><Store aria-hidden="true"/><span><strong>Wide Selection</strong><small>Across Categories</small></span></div>
+        <div><ShieldCheck aria-hidden="true"/><span><strong>Product Information</strong><small>Details shown in catalog</small></span></div>
+        <div><Tag aria-hidden="true"/><span><strong>Offers</strong><small>When listed in catalog</small></span></div>
       </div>
     </section>
 
@@ -94,6 +66,6 @@ export default function HomePage() {
       {brands.loading ? <CategorySkeletons count={5} /> : brands.error ? <ErrorState message={brands.error} onRetry={brands.retry} /> : <div className="brand-row" data-reveal>{brands.value.slice(0, 12).map((brand) => <BrandMark key={brand._id || brand.id} brand={brand} />)}</div>}
     </section>}
 
-    <section className="closing-callout" data-reveal><div><span className="eyebrow">Ready when you are</span><h2>Find what fits your everyday.</h2></div><Link className="button button-light" to="/products">Explore the catalog <ArrowUpRight size={18} /></Link></section>
-  </>;
+    <section className="closing-callout" id="about" data-reveal><div><span className="eyebrow">Ready when you are</span><h2>Find what fits your everyday.</h2></div><Link className="button button-light" to="/products">Explore the catalog <ArrowUpRight size={18} /></Link></section>
+  </div>;
 }

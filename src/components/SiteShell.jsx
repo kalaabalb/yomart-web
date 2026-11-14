@@ -41,20 +41,25 @@ export function SiteShell({ children }) {
   }
   const count = itemCount > 99 ? '99+' : itemCount;
 
-  return <div className="site-frame">
-    <div className="announcement"><span className="announcement-dot" aria-hidden="true" /> Explore the YoMart catalog <ArrowRight size={13} aria-hidden="true" /></div>
+  const isHome = location.pathname === '/';
+  return <div className={`site-frame${isHome ? ' home-site-frame' : ''}`}>
+    <div className="announcement">{isHome ? <span className="home-tagline">SHOP SMARTER. LIVE BETTER.</span> : <><span className="announcement-dot" aria-hidden="true" /> Explore the YoMart catalog <ArrowRight size={13} aria-hidden="true" /></>}</div>
     <header className={scrolled ? 'site-header is-scrolled' : 'site-header'}>
       <Link className="wordmark" to="/" aria-label="YoMart home"><img src="/yomart_gold_mark.png" alt="" /><span>YoMart</span></Link>
       <nav id="main-navigation" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
         <NavLink to="/" end>Home</NavLink>
         <NavLink to="/products">Shop</NavLink>
-        <NavLink to="/support">Support</NavLink>
+        {isHome && <Link to="/#categories" onClick={() => setMenuOpen(false)}>Categories</Link>}
+        {isHome && <NavLink to="/products?inStock=true">Deals</NavLink>}
+        {isHome && <Link to="/#about">About</Link>}
+        {isHome && <NavLink to="/support">Contact</NavLink>}
+        {!isHome && <NavLink to="/support">Support</NavLink>}
         {user && <NavLink to="/orders">Orders</NavLink>}
         {user && <NavLink to="/account">Account</NavLink>}
-        <Link to="/#categories" onClick={() => setMenuOpen(false)}>Categories</Link>
-        <Link to="/#brands" onClick={() => setMenuOpen(false)}>Brands</Link>
-        {!user && <NavLink to="/login">Login</NavLink>}
-        {!user && <NavLink to="/register">Register</NavLink>}
+        {!isHome && <Link to="/#categories" onClick={() => setMenuOpen(false)}>Categories</Link>}
+        <Link className={isHome ? 'home-nav-brands-link' : undefined} to="/#brands" onClick={() => setMenuOpen(false)}>Brands</Link>
+        {!user && <NavLink className={isHome ? 'home-nav-auth-link' : undefined} to="/login">Login</NavLink>}
+        {!user && <NavLink className={isHome ? 'home-nav-auth-link' : undefined} to="/register">Register</NavLink>}
         {user && <button className="nav-logout" type="button" onClick={() => { logout(); setMenuOpen(false); navigate('/'); }}>Sign out <LogOut size={16} /></button>}
       </nav>
       <form className="header-search" onSubmit={submitSearch} role="search">
