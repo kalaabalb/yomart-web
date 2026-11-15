@@ -25,11 +25,14 @@ test('homepage hero uses monochrome illustrative artwork and preserves real shop
   assert.match(styles, /\.homepage \.hero-features/);
   assert.match(styles, /\.homepage \.hero-artwork \{ position: absolute; z-index: 0; inset: 0/);
   assert.match(styles, /\.homepage \.hero-artwork img \{[^}]*object-fit: cover/);
-  assert.match(styles, /@media \(max-width: 700px\)[\s\S]*?\.homepage \.hero-artwork \{ inset: 185px/);
+  assert.match(styles, /@media \(min-width: 1101px\) and \(max-width: 1340px\)[\s\S]*?\.home-site-frame \.header-search \{ flex: 0 1 270px/);
+  assert.match(styles, /@media \(max-width: 700px\)[\s\S]*?\.homepage \.hero-copy > p \{ max-width: 36ch/);
+  assert.match(styles, /\.homepage \.hero-shop-button \{ min-height: 48px; margin-top: 24px/);
+  assert.match(styles, /@media \(max-width: 700px\)[\s\S]*?\.homepage \.hero-artwork \{ inset: 205px/);
   assert.match(styles, /\.homepage \.hero-artwork img \{ object-position: 88% center/);
   assert.match(styles, /min-height: min\(610px, calc\(100svh - 214px\)\)/);
   assert.match(styles, /\.homepage \.hero-features \{[^}]*min-height: 100px/);
   assert.match(styles, /\.home-site-frame \.main-nav \.home-nav-auth-link \{ display: inline-flex; \}/);
-  assert.match(styles, /\.homepage \.hero-features small \{[^}]*font-size: \.7rem/);
+  assert.match(styles, /\.homepage \.hero-features small \{[^}]*font-size: \.72rem/);
   assert.match(styles, /\.homepage \.hero-features > div:nth-child\(3\) \{ grid-column: 1 \/ -1/);
 });
