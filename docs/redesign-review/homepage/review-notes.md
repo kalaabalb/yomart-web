@@ -1,20 +1,31 @@
-# Homepage visual review
+# Homepage artwork review
 
-## Captures
+## Implementation
 
-The PNG files in this directory are browser screenshots of the local staging build at 1440×1000, 1280×900, and 390×844. They show the real application and its preview restrictions. The staging catalog API was unreachable during capture, so the page displays its preview notice and real empty/error states; no products or prices were fabricated. The screenshots contain no customer, order, or payment data.
+- Replaced the old front-facing illustration layer with `public/homepage-headphones-hero.png`, the owner-provided 1672×941 PNG. It is illustrative hero artwork only; it is not a catalog item. The existing `homepage-headphones.webp` file remains in the repository but is no longer referenced by the homepage.
+- The source artwork includes the three-quarter-view black headphones, dark left-side negative space, and metallic silver curves. It is displayed full-bleed on desktop, so its image edges blend with the hero surface. The duplicate CSS silver arcs and their image-blending treatment were removed.
+- Mobile uses a separate lower, right-biased crop. The hero height contracts on shorter mobile viewports so the three-part feature strip remains fully visible at 360×800. Feature descriptions were increased slightly for readability.
+- Preserved the headline, supporting copy, Shop Now route, official YoMart mark, all nine desktop navigation destinations, search/account/cart behavior, API-backed catalog sections, and preview-catalog restrictions.
+- Removed the decorative, non-interactive hero dots; the hero is static and no longer implies a carousel.
 
-## Current implementation
+## Screenshot captures
 
-- The homepage uses the black, charcoal, white, and silver direction, official YoMart wordmark asset, search/navigation/account/cart controls, Shop Now action, carousel indicators, and bottom feature strip.
-- The hero headphones remain illustrative and are not presented as a catalog product.
-- Homepage navigation order now follows Home, Shop, Categories, Deals, About, Contact.
-- The headphone image uses a screen blend over a dark radial backing to avoid the former rectangular photograph boundary. A broad silver foreground sweep now layers over the lower headphone area with a thin bright edge. Mobile keeps the text/action column clear, shows two feature groups side by side and a third across the strip, and keeps all three groups inside the 390×844 capture.
-- Desktop navigation includes Home, Shop, Categories, Deals, About, Contact, Brands, Login, and Register; the header search, account, and cart remain available.
-- Homepage CSS is scoped to the homepage selectors and responsive overrides.
+Captured from the local staging build using Chromium at device scale factor 1. The live catalog was not used to add any product to the hero; preview restrictions remain enabled.
 
-## Outstanding visual work
+- `desktop-1440x1000.png` — 1440×1000.
+- `desktop-1280x900.png` — 1280×900.
+- `mobile-390x844.png` — 390×844.
+- `mobile-360x800.png` — 360×800.
 
-- The supplied approved reference image was not present as a local file and is therefore not stored as `docs/design-reference/homepage-approved.png`. The screenshots cannot be compared pixel-by-pixel to the source reference until that original file is made available.
-- The available headphone source is front-facing rather than the reference's angled product composition. The metallic foreground sweep is CSS-rendered and remains an approximation of the approved studio surface, so visual acceptance is pending.
-- The preview banner is visible because this is a staging build; it is not part of a production page capture.
+## Visual inspection and remaining differences
+
+- Both desktop captures show the headphones dominant on the right, with the headline and Shop Now action clear on the left. The image’s silver sweep is integrated without a second CSS arc or a visible rectangular boundary. The feature strip overlays the lower composition without obscuring the headphone form.
+- Both mobile captures use the separate crop: text remains on the left/top, the headphones sit lower and to the right, and the feature strip fits inside each viewport. At 360px the right edge of the headphone artwork is intentionally cropped to keep the subject prominent.
+- The screenshots include the visible staging preview notice. No production catalog or checkout behavior is implied by these captures.
+- The flat reference artwork does not include separate layers, so the original image’s curve geometry and headphone lighting cannot be adjusted independently in CSS.
+
+## Validation
+
+- `npm test`: 49 passed, 0 failed.
+- Staging build: passed with the existing origin validation and noindex protections.
+- `git diff --check`: passed.

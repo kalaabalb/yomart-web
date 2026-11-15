@@ -27,12 +27,9 @@ export default function HomePage() {
         <p>Discover quality products<br className="hero-copy-break" /> with a better shopping experience.</p>
         <Link className="hero-shop-button" to="/products">Shop Now <ArrowRight size={20} aria-hidden="true" /></Link>
       </div>
-      <div className="hero-stage" aria-label="Illustrative black over-ear headphones against a silver studio backdrop">
-        <div className="hero-silver-arc hero-silver-arc-one" />
-        <div className="hero-silver-arc hero-silver-arc-two" />
-        <img className="hero-headphones" src="/homepage-headphones.webp" alt="" fetchPriority="high" />
+      <div className="hero-artwork" aria-hidden="true">
+        <img src="/homepage-headphones-hero.png" alt="" fetchPriority="high" />
       </div>
-      <div className="hero-indicators" aria-hidden="true"><i className="active"/><i/><i/></div>
       <div className="hero-features" aria-label="Shopping information">
         <div><Store aria-hidden="true"/><span><strong>Wide Selection</strong><small>Across Categories</small></span></div>
         <div><ShieldCheck aria-hidden="true"/><span><strong>Product Information</strong><small>Details shown in catalog</small></span></div>
